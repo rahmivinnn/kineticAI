@@ -236,7 +236,7 @@ export default function ProviderDashboardPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <Card className="bg-gradient-to-br from-[#014585] to-[#0070c0] text-white">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Patient Management</CardTitle>
@@ -264,6 +264,30 @@ export default function ProviderDashboardPage() {
                       <Plus className="h-4 w-4 mr-1" /> Add New
                     </Button>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-[#7e58f4] to-[#5a3dc8] text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">OpenPose AI</CardTitle>
+                <CardDescription className="text-purple-100">Movement analysis tool</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <Camera className="mr-2 h-5 w-5 text-purple-200" />
+                    <span>Patient analysis</span>
+                  </div>
+                  <Link href="/pose-estimation">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="bg-white text-[#7e58f4] hover:bg-purple-100 hover:text-[#5a3dc8]"
+                    >
+                      Open Tool
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -560,6 +584,64 @@ export default function ProviderDashboardPage() {
                 </CardContent>
               </Card>
 
+              {/* OpenPose AI Analysis */}
+              <Card className="overflow-hidden">
+                <CardHeader className="pb-3 bg-gradient-to-r from-[#7e58f4] to-[#5a3dc8] text-white">
+                  <div className="flex justify-between items-center">
+                    <CardTitle>OpenPose AI Analysis</CardTitle>
+                    <Link href="/pose-estimation">
+                      <Button variant="secondary" size="sm" className="bg-white text-[#7e58f4] hover:bg-purple-100">
+                        View Tool
+                      </Button>
+                    </Link>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="relative aspect-video bg-gray-900">
+                    <Image
+                      src="/movement-intelligence.png"
+                      alt="OpenPose Analysis"
+                      fill
+                      className="object-cover opacity-80"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+                      <h3 className="text-white font-medium mb-1">Patient Movement Analysis</h3>
+                      <p className="text-white/80 text-sm">Track patient progress with AI-powered movement analysis</p>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-medium text-gray-900">Recent Patient Analyses</h4>
+                      <span className="text-xs text-gray-500">Last updated: Today</span>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center">
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
+                            <Image src="/athletic-man-short-hair.png" alt="Patient" width={24} height={24} />
+                          </div>
+                          <span>John D.</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Completed</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center">
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
+                            <Image src="/smiling-brown-haired-woman.png" alt="Patient" width={24} height={24} />
+                          </div>
+                          <span>Sarah M.</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">In Progress</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Quick Links */}
               <Card>
                 <CardHeader className="pb-3">
@@ -567,6 +649,15 @@ export default function ProviderDashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
+                    <Link href="/pose-estimation">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between text-[#7e58f4] hover:text-[#5a3dc8] bg-purple-50"
+                      >
+                        OpenPose AI Analysis
+                        <Camera className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                     <Link href="/video-library/exercise-demos">
                       <Button variant="outline" className="w-full justify-between text-[#014585] hover:text-[#013a70]">
                         Exercise Library
