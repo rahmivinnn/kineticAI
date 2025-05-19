@@ -20,58 +20,98 @@ export function NotificationSystem() {
   const [newNotification, setNewNotification] = useState<Notification | null>(null)
   const { socket, isConnected } = useSocket()
 
+  // Generate random notifications
+  const generateRandomNotification = (): Notification => {
+    const types: Notification["type"][] = ["message", "appointment", "exercise", "progress"];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    const titles = {
+      message: ["New Message", "Message Received", "Therapist Message"],
+      appointment: ["Appointment Reminder", "Appointment Update", "Schedule Change"],
+      exercise: ["Exercise Completed", "New Exercise Added", "Exercise Reminder"],
+      progress: ["Progress Update", "Recovery Milestone", "Goal Achieved"]
+    };
+
+    const messages = {
+      message: [
+        "Dr. Sarah Johnson sent you a message",
+        "Dr. Michael Chen has a question about your progress",
+        "New message from your physical therapist",
+        "Reception sent you information about your next visit"
+      ],
+      appointment: [
+        "You have an appointment tomorrow at 2:30 PM",
+        "Your appointment on Friday has been confirmed",
+        "Reminder: Video consultation in 2 hours",
+        "Your therapist suggested a follow-up appointment"
+      ],
+      exercise: [
+        "Great job! You've completed today's exercises",
+        "New exercise routine has been added to your program",
+        "Don't forget to complete your evening exercises",
+        "Your exercise performance has improved by 15%"
+      ],
+      progress: [
+        "Your therapist has updated your recovery progress",
+        "Congratulations! You've reached a recovery milestone",
+        "Your range of motion has improved significantly",
+        "Weekly progress report is now available"
+      ]
+    };
+
+    const title = titles[type][Math.floor(Math.random() * titles[type].length)];
+    const message = messages[type][Math.floor(Math.random() * messages[type].length)];
+
+    // Generate a random timestamp within the last 24 hours
+    const hoursAgo = Math.floor(Math.random() * 24);
+    const minutesAgo = Math.floor(Math.random() * 60);
+    const timestamp = new Date(Date.now() - (hoursAgo * 60 * 60 * 1000) - (minutesAgo * 60 * 1000));
+
+    return {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+      title,
+      message,
+      type,
+      read: Math.random() > 0.7, // 30% chance of being unread
+      timestamp
+    };
+  };
+
   // Simulate receiving notifications
   useEffect(() => {
     if (isConnected) {
-      const initialNotifications: Notification[] = [
-        {
-          id: "1",
-          title: "New Message",
-          message: "Dr. Sarah Johnson sent you a message",
-          type: "message",
-          read: false,
-          timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-        },
-        {
-          id: "2",
-          title: "Appointment Reminder",
-          message: "You have an appointment tomorrow at 2:30 PM",
-          type: "appointment",
-          read: true,
-          timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-        },
-        {
-          id: "3",
-          title: "Exercise Completed",
-          message: "Great job! You've completed today's exercises",
-          type: "exercise",
-          read: true,
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3), // 3 hours ago
-        },
-      ]
+      // Generate 3-5 initial notifications
+      const count = Math.floor(Math.random() * 3) + 3;
+      const initialNotifications: Notification[] = [];
 
-      setNotifications(initialNotifications)
+      for (let i = 0; i < count; i++) {
+        initialNotifications.push(generateRandomNotification());
+      }
 
-      // Simulate receiving a new notification after 10 seconds
-      const timer = setTimeout(() => {
-        const newNotif: Notification = {
-          id: "4",
-          title: "Progress Update",
-          message: "Your therapist has updated your recovery progress",
-          type: "progress",
-          read: false,
-          timestamp: new Date(),
+      // Sort by timestamp (newest first)
+      initialNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+      setNotifications(initialNotifications);
+
+      // Simulate receiving new notifications periodically
+      const interval = setInterval(() => {
+        // 30% chance of receiving a new notification
+        if (Math.random() < 0.3) {
+          const newNotif = generateRandomNotification();
+          newNotif.timestamp = new Date(); // Set to now
+          newNotif.read = false; // Always unread
+
+          setNotifications((prev) => [newNotif, ...prev]);
+          setNewNotification(newNotif);
+
+          // Auto-hide the notification after 5 seconds
+          setTimeout(() => {
+            setNewNotification(null);
+          }, 5000);
         }
-        setNotifications((prev) => [newNotif, ...prev])
-        setNewNotification(newNotif)
+      }, 15000); // Check every 15 seconds
 
-        // Auto-hide the notification after 5 seconds
-        setTimeout(() => {
-          setNewNotification(null)
-        }, 5000)
-      }, 10000)
-
-      return () => clearTimeout(timer)
+      return () => clearInterval(interval);
     }
   }, [isConnected])
 

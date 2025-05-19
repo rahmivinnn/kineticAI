@@ -42,6 +42,9 @@ export default function PoseEstimationPage() {
   const [activeTab, setActiveTab] = useState("live")
   const [isVideoOn, setIsVideoOn] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
+  const [recordingTime, setRecordingTime] = useState(0)
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([])
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
   const [showSkeleton, setShowSkeleton] = useState(true)
   const [show3D, setShow3D] = useState(false)
   const [showAugmentation, setShowAugmentation] = useState(false)
@@ -51,6 +54,7 @@ export default function PoseEstimationPage() {
   const [detectionQuality, setDetectionQuality] = useState(75)
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [isModelLoaded, setIsModelLoaded] = useState(false)
   const [isModelLoading, setIsModelLoading] = useState(false)
   const [fps, setFps] = useState(0)
@@ -96,9 +100,82 @@ export default function PoseEstimationPage() {
     }
   }
 
+  // Format recording time
+  const formatRecordingTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
   // Toggle recording
   const toggleRecording = () => {
-    setIsRecording(!isRecording)
+    if (!isVideoOn || !videoRef.current?.srcObject) return;
+
+    if (isRecording) {
+      // Stop recording
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+
+      // Clear timer
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+
+      setIsRecording(false);
+    } else {
+      // Start recording
+      try {
+        const stream = videoRef.current.srcObject as MediaStream;
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+        const chunks: Blob[] = [];
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            chunks.push(e.data);
+          }
+        };
+
+        recorder.onstop = () => {
+          // Create a single blob from all chunks
+          const blob = new Blob(chunks, { type: 'video/webm' });
+          setRecordedChunks([...chunks]);
+
+          // Create download link
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `pose-recording-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.webm`;
+          document.body.appendChild(a);
+          a.click();
+
+          // Clean up
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 100);
+
+          // Reset recording time
+          setRecordingTime(0);
+        };
+
+        // Start recording
+        recorder.start(1000); // Collect data every second
+        setMediaRecorder(recorder);
+
+        // Start timer
+        setRecordingTime(0);
+        recordingTimerRef.current = setInterval(() => {
+          setRecordingTime(prev => prev + 1);
+        }, 1000);
+
+        setIsRecording(true);
+      } catch (error) {
+        console.error('Error starting recording:', error);
+        alert('Failed to start recording. Please make sure your browser supports MediaRecorder API.');
+      }
+    }
   }
 
   // Start pose detection
@@ -136,6 +213,9 @@ export default function PoseEstimationPage() {
     return () => clearInterval(poseDetectionInterval)
   }
 
+  // Previous keypoints for smooth animation
+  const [prevKeypoints, setPrevKeypoints] = useState<any[]>([])
+
   // Draw skeleton on canvas
   const drawSkeleton = (ctx: CanvasRenderingContext2D) => {
     if (!canvasRef.current) return
@@ -143,8 +223,8 @@ export default function PoseEstimationPage() {
     const width = canvasRef.current.width
     const height = canvasRef.current.height
 
-    // Generate random keypoints for demo
-    const keypoints = [
+    // Base keypoints positions
+    const baseKeypoints = [
       { x: width * 0.5, y: height * 0.1 }, // head
       { x: width * 0.5, y: height * 0.3 }, // neck
       { x: width * 0.4, y: height * 0.4 }, // left shoulder
@@ -162,98 +242,195 @@ export default function PoseEstimationPage() {
       { x: width * 0.65, y: height * 0.95 }, // right ankle
     ]
 
-    // Draw keypoints
-    ctx.fillStyle = '#00ff00'
-    keypoints.forEach(point => {
-      ctx.beginPath()
-      ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI)
-      ctx.fill()
+    // Add realistic movement to keypoints
+    const time = Date.now() / 1000
+    const keypoints = baseKeypoints.map((point, index) => {
+      // Different oscillation for different body parts
+      let xOffset = 0
+      let yOffset = 0
+
+      // Breathing movement for torso
+      if (index === 8) { // torso
+        yOffset = Math.sin(time * 1.5) * height * 0.005
+      }
+
+      // Slight movement for head
+      if (index === 0) { // head
+        xOffset = Math.sin(time * 0.8) * width * 0.005
+        yOffset = Math.sin(time * 1.2) * height * 0.005
+      }
+
+      // Arm movement
+      if ([4, 5, 6, 7].includes(index)) { // elbows and wrists
+        xOffset = Math.sin(time * (index % 2 === 0 ? 1.2 : 1.5)) * width * 0.01
+        yOffset = Math.cos(time * (index % 2 === 0 ? 1.0 : 0.8)) * height * 0.01
+      }
+
+      // Slight leg movement
+      if ([11, 12, 13, 14].includes(index)) { // knees and ankles
+        xOffset = Math.sin(time * (index % 2 === 0 ? 0.5 : 0.7)) * width * 0.005
+        yOffset = Math.cos(time * (index % 2 === 0 ? 0.6 : 0.4)) * height * 0.005
+      }
+
+      return {
+        x: point.x + xOffset,
+        y: point.y + yOffset
+      }
     })
 
-    // Draw connections
-    ctx.strokeStyle = '#00ff00'
-    ctx.lineWidth = 2
+    // Smooth transition between frames
+    let smoothKeypoints = keypoints
+    if (prevKeypoints.length > 0) {
+      smoothKeypoints = keypoints.map((point, i) => {
+        return {
+          x: prevKeypoints[i].x + (point.x - prevKeypoints[i].x) * 0.3,
+          y: prevKeypoints[i].y + (point.y - prevKeypoints[i].y) * 0.3
+        }
+      })
+    }
 
-    // Head to neck
-    ctx.beginPath()
-    ctx.moveTo(keypoints[0].x, keypoints[0].y)
-    ctx.lineTo(keypoints[1].x, keypoints[1].y)
-    ctx.stroke()
+    // Save current keypoints for next frame
+    setPrevKeypoints(smoothKeypoints)
 
-    // Neck to shoulders
-    ctx.beginPath()
-    ctx.moveTo(keypoints[1].x, keypoints[1].y)
-    ctx.lineTo(keypoints[2].x, keypoints[2].y)
-    ctx.stroke()
+    // Draw keypoints with glow effect
+    const drawPoint = (x: number, y: number, radius: number, color: string) => {
+      // Outer glow
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius * 2);
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(1, 'rgba(0, 255, 0, 0)');
 
-    ctx.beginPath()
-    ctx.moveTo(keypoints[1].x, keypoints[1].y)
-    ctx.lineTo(keypoints[3].x, keypoints[3].y)
-    ctx.stroke()
+      ctx.beginPath();
+      ctx.arc(x, y, radius * 2, 0, 2 * Math.PI);
+      ctx.fillStyle = gradient;
+      ctx.fill();
 
-    // Shoulders to elbows
-    ctx.beginPath()
-    ctx.moveTo(keypoints[2].x, keypoints[2].y)
-    ctx.lineTo(keypoints[4].x, keypoints[4].y)
-    ctx.stroke()
+      // Inner point
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
+    };
 
-    ctx.beginPath()
-    ctx.moveTo(keypoints[3].x, keypoints[3].y)
-    ctx.lineTo(keypoints[5].x, keypoints[5].y)
-    ctx.stroke()
+    // Draw connections with gradient
+    const drawConnection = (x1: number, y1: number, x2: number, y2: number, color: string) => {
+      const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(1, color);
 
-    // Elbows to wrists
-    ctx.beginPath()
-    ctx.moveTo(keypoints[4].x, keypoints[4].y)
-    ctx.lineTo(keypoints[6].x, keypoints[6].y)
-    ctx.stroke()
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 3;
+      ctx.stroke();
 
-    ctx.beginPath()
-    ctx.moveTo(keypoints[5].x, keypoints[5].y)
-    ctx.lineTo(keypoints[7].x, keypoints[7].y)
-    ctx.stroke()
+      // Add glow effect
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = 'rgba(0, 255, 0, 0.2)';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+    };
 
-    // Neck to torso
-    ctx.beginPath()
-    ctx.moveTo(keypoints[1].x, keypoints[1].y)
-    ctx.lineTo(keypoints[8].x, keypoints[8].y)
-    ctx.stroke()
+    // Define connections for better readability
+    const connections = [
+      [0, 1], // Head to neck
+      [1, 2], // Neck to left shoulder
+      [1, 3], // Neck to right shoulder
+      [2, 4], // Left shoulder to left elbow
+      [3, 5], // Right shoulder to right elbow
+      [4, 6], // Left elbow to left wrist
+      [5, 7], // Right elbow to right wrist
+      [1, 8], // Neck to torso
+      [8, 9], // Torso to left hip
+      [8, 10], // Torso to right hip
+      [9, 11], // Left hip to left knee
+      [10, 12], // Right hip to right knee
+      [11, 13], // Left knee to left ankle
+      [12, 14], // Right knee to right ankle
+    ];
 
-    // Torso to hips
-    ctx.beginPath()
-    ctx.moveTo(keypoints[8].x, keypoints[8].y)
-    ctx.lineTo(keypoints[9].x, keypoints[9].y)
-    ctx.stroke()
+    // Draw connections first (so they appear behind points)
+    connections.forEach(([i, j]) => {
+      drawConnection(
+        smoothKeypoints[i].x,
+        smoothKeypoints[i].y,
+        smoothKeypoints[j].x,
+        smoothKeypoints[j].y,
+        '#00ff00'
+      );
+    });
 
-    ctx.beginPath()
-    ctx.moveTo(keypoints[8].x, keypoints[8].y)
-    ctx.lineTo(keypoints[10].x, keypoints[10].y)
-    ctx.stroke()
+    // Draw keypoints
+    smoothKeypoints.forEach((point, i) => {
+      // Different sizes for different joints
+      let radius = 4;
+      if ([0].includes(i)) radius = 5; // Head
+      if ([1, 8].includes(i)) radius = 4.5; // Neck, torso
+      if ([2, 3, 9, 10].includes(i)) radius = 4; // Shoulders, hips
 
-    // Hips to knees
-    ctx.beginPath()
-    ctx.moveTo(keypoints[9].x, keypoints[9].y)
-    ctx.lineTo(keypoints[11].x, keypoints[11].y)
-    ctx.stroke()
+      // Different colors based on body part
+      let color = '#00ff00';
+      if (show3D) {
+        // In 3D mode, use depth-based coloring
+        const depthValue = Math.sin(Date.now() / 1000 + i) * 0.5 + 0.5; // 0-1 value
+        const r = Math.round(depthValue * 255);
+        const g = Math.round(255 - depthValue * 100);
+        const b = Math.round(depthValue * 100);
+        color = `rgb(${r}, ${g}, ${b})`;
+      }
 
-    ctx.beginPath()
-    ctx.moveTo(keypoints[10].x, keypoints[10].y)
-    ctx.lineTo(keypoints[12].x, keypoints[12].y)
-    ctx.stroke()
+      drawPoint(point.x, point.y, radius, color);
+    });
 
-    // Knees to ankles
-    ctx.beginPath()
-    ctx.moveTo(keypoints[11].x, keypoints[11].y)
-    ctx.lineTo(keypoints[13].x, keypoints[13].y)
-    ctx.stroke()
+    // Add augmentation if enabled
+    if (showAugmentation) {
+      // Example: Add a hat on the head
+      const headX = smoothKeypoints[0].x;
+      const headY = smoothKeypoints[0].y;
+      const hatWidth = width * 0.1;
+      const hatHeight = height * 0.05;
 
-    ctx.beginPath()
-    ctx.moveTo(keypoints[12].x, keypoints[12].y)
-    ctx.lineTo(keypoints[14].x, keypoints[14].y)
-    ctx.stroke()
+      ctx.fillStyle = '#ff5500';
+      ctx.beginPath();
+      ctx.ellipse(headX, headY - hatHeight * 0.5, hatWidth * 0.5, hatHeight * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-    // Store pose data for analysis
-    setPoseData(keypoints)
+      // Add more augmentations based on selectedAugmentation
+      if (selectedAugmentation === 'sword') {
+        // Draw a sword in the right hand
+        const handX = smoothKeypoints[7].x;
+        const handY = smoothKeypoints[7].y;
+        const swordLength = height * 0.2;
+
+        ctx.strokeStyle = '#silver';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(handX, handY);
+        ctx.lineTo(handX + swordLength * 0.7, handY - swordLength * 0.7);
+        ctx.stroke();
+
+        // Sword handle
+        ctx.strokeStyle = '#brown';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(handX, handY);
+        ctx.lineTo(handX - 10, handY + 10);
+        ctx.stroke();
+      }
+    }
+
+    // Store pose data for analysis with confidence scores
+    const poseWithConfidence = smoothKeypoints.map((point, i) => ({
+      ...point,
+      confidence: 0.7 + Math.random() * 0.3, // Simulate confidence scores between 0.7-1.0
+      part: ['head', 'neck', 'leftShoulder', 'rightShoulder', 'leftElbow', 'rightElbow',
+             'leftWrist', 'rightWrist', 'torso', 'leftHip', 'rightHip', 'leftKnee',
+             'rightKnee', 'leftAnkle', 'rightAnkle'][i]
+    }));
+
+    setPoseData(poseWithConfidence);
   }
 
   // Start video call
@@ -337,9 +514,20 @@ export default function PoseEstimationPage() {
   // Clean up on unmount
   useEffect(() => {
     return () => {
+      // Stop webcam
       stopWebcam()
+
+      // Stop recording if active
+      if (isRecording && mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop()
+      }
+
+      // Clear recording timer
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current)
+      }
     }
-  }, [])
+  }, [isRecording, mediaRecorder])
 
   // Add event listener for drag and drop
   useEffect(() => {
@@ -556,11 +744,12 @@ export default function PoseEstimationPage() {
                             variant="outline"
                             size="sm"
                             disabled={!isVideoOn}
-                            className={isRecording ? "text-red-500" : ""}
+                            className={isRecording ? "text-red-500 border-red-200 bg-red-50" : ""}
                           >
                             {isRecording ? (
                               <>
-                                <Pause className="h-4 w-4 mr-1" /> Stop Recording
+                                <Pause className="h-4 w-4 mr-1" /> Stop Recording {formatRecordingTime(recordingTime)}
+                                <span className="ml-1 h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
                               </>
                             ) : (
                               <>
@@ -570,10 +759,60 @@ export default function PoseEstimationPage() {
                           </Button>
                         </div>
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="sm" disabled={!isVideoOn}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!isVideoOn || !poseData}
+                            onClick={() => {
+                              if (poseData) {
+                                // Create a blob with the pose data
+                                const dataStr = JSON.stringify(poseData, null, 2);
+                                const blob = new Blob([dataStr], { type: 'application/json' });
+                                const url = URL.createObjectURL(blob);
+
+                                // Create a link and trigger download
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `pose-data-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+                                document.body.appendChild(a);
+                                a.click();
+
+                                // Clean up
+                                setTimeout(() => {
+                                  document.body.removeChild(a);
+                                  URL.revokeObjectURL(url);
+                                }, 100);
+
+                                // Show success message
+                                alert('Pose data saved successfully!');
+                              }
+                            }}
+                          >
                             <Download className="h-4 w-4 mr-1" /> Save Data
                           </Button>
-                          <Button variant="outline" size="sm" disabled={!isVideoOn}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!isVideoOn || !poseData}
+                            onClick={() => {
+                              if (poseData) {
+                                // In a real app, this would open a sharing dialog
+                                // For demo, we'll simulate a share action
+
+                                // Create a temporary input to copy a share URL
+                                const input = document.createElement('input');
+                                const shareUrl = `https://kinetic-ai.example.com/share/pose-${Date.now().toString(36)}`;
+                                input.value = shareUrl;
+                                document.body.appendChild(input);
+                                input.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(input);
+
+                                // Show success message
+                                alert(`Share link copied to clipboard: ${shareUrl}`);
+                              }
+                            }}
+                          >
                             <Share2 className="h-4 w-4 mr-1" /> Share
                           </Button>
                         </div>
@@ -633,6 +872,47 @@ export default function PoseEstimationPage() {
                               disabled={!isVideoOn}
                             />
                           </div>
+
+                          {showAugmentation && (
+                            <div className="mt-2 pl-4 space-y-2">
+                              <div className="flex items-center">
+                                <input
+                                  type="radio"
+                                  id="aug-none"
+                                  name="augmentation"
+                                  value="none"
+                                  checked={selectedAugmentation === 'none'}
+                                  onChange={() => setSelectedAugmentation('none')}
+                                  className="mr-2"
+                                />
+                                <Label htmlFor="aug-none" className="text-sm">None</Label>
+                              </div>
+                              <div className="flex items-center">
+                                <input
+                                  type="radio"
+                                  id="aug-hat"
+                                  name="augmentation"
+                                  value="hat"
+                                  checked={selectedAugmentation === 'hat'}
+                                  onChange={() => setSelectedAugmentation('hat')}
+                                  className="mr-2"
+                                />
+                                <Label htmlFor="aug-hat" className="text-sm">Hat</Label>
+                              </div>
+                              <div className="flex items-center">
+                                <input
+                                  type="radio"
+                                  id="aug-sword"
+                                  name="augmentation"
+                                  value="sword"
+                                  checked={selectedAugmentation === 'sword'}
+                                  onChange={() => setSelectedAugmentation('sword')}
+                                  className="mr-2"
+                                />
+                                <Label htmlFor="aug-sword" className="text-sm">Sword</Label>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

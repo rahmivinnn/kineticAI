@@ -29,105 +29,201 @@ import { motion } from "framer-motion"
 
 export default function DashboardPage() {
   const { user, logout } = useAuth()
-  const [upcomingAppointments, setUpcomingAppointments] = useState([
-    {
-      id: 1,
-      therapistName: "Dr. Sarah Johnson",
-      therapistImage: "/caring-doctor.png",
-      date: "Today",
-      time: "2:30 PM",
-      type: "Video Consultation",
-      status: "confirmed",
-    },
-    {
-      id: 2,
-      therapistName: "Dr. Michael Chen",
-      therapistImage: "/friendly-receptionist.png",
-      date: "Tomorrow",
-      time: "10:00 AM",
-      type: "In-Person Session",
-      status: "pending",
-    },
-  ])
 
-  const [recentExercises, setRecentExercises] = useState([
-    {
-      id: 1,
-      name: "Shoulder Mobility",
-      lastPerformed: "Yesterday",
-      duration: "15 min",
-      sets: 3,
-      reps: 12,
-      progress: 75,
-    },
-    {
-      id: 2,
-      name: "Knee Stability",
-      lastPerformed: "2 days ago",
-      duration: "20 min",
-      sets: 4,
-      reps: 10,
-      progress: 60,
-    },
-    {
-      id: 3,
-      name: "Core Strengthening",
-      lastPerformed: "3 days ago",
-      duration: "25 min",
-      sets: 3,
-      reps: 15,
-      progress: 40,
-    },
-  ])
+  // Generate more varied and dynamic data
+  const generateAppointments = () => {
+    const therapists = [
+      { name: "Dr. Sarah Johnson", image: "/caring-doctor.png" },
+      { name: "Dr. Michael Chen", image: "/friendly-receptionist.png" },
+      { name: "Dr. Emily Rodriguez", image: "/smiling-brown-haired-woman.png" },
+      { name: "Dr. James Wilson", image: "/athletic-man-short-hair.png" },
+      { name: "Dr. Lisa Thompson", image: "/older-man-glasses.png" }
+    ];
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "Dr. Sarah Johnson",
-      senderImage: "/caring-doctor.png",
-      message: "How are you feeling after yesterday's session? Any soreness or discomfort?",
-      time: "1 hour ago",
-      unread: true,
-    },
-    {
-      id: 2,
-      sender: "Reception",
-      senderImage: "/friendly-receptionist.png",
-      message: "Your insurance claim has been processed successfully. No further action needed.",
-      time: "Yesterday",
-      unread: false,
-    },
-  ])
+    const appointmentTypes = [
+      "Video Consultation",
+      "In-Person Session",
+      "Follow-up Evaluation",
+      "Initial Assessment",
+      "Progress Review",
+      "Therapy Session",
+      "Movement Analysis"
+    ];
 
-  const [progressMetrics, setProgressMetrics] = useState([
-    {
-      id: 1,
-      name: "Range of Motion",
-      current: 85,
-      target: 120,
-      unit: "degrees",
-      change: "+5",
-      trend: "up",
-    },
-    {
-      id: 2,
-      name: "Pain Level",
-      current: 3,
-      target: 0,
-      unit: "/10",
-      change: "-1",
-      trend: "down",
-    },
-    {
-      id: 3,
-      name: "Strength",
-      current: 65,
-      target: 85,
-      unit: "%",
-      change: "+8",
-      trend: "up",
-    },
-  ])
+    const dates = ["Today", "Tomorrow", "May 25", "May 28", "June 2"];
+    const times = ["9:00 AM", "10:30 AM", "1:15 PM", "2:30 PM", "4:00 PM", "5:15 PM"];
+    const statuses = ["confirmed", "pending"];
+
+    // Generate 2-4 random appointments
+    const count = Math.floor(Math.random() * 3) + 2;
+    const appointments = [];
+
+    for (let i = 0; i < count; i++) {
+      appointments.push({
+        id: i + 1,
+        therapistName: therapists[Math.floor(Math.random() * therapists.length)].name,
+        therapistImage: therapists[Math.floor(Math.random() * therapists.length)].image,
+        date: dates[Math.floor(Math.random() * dates.length)],
+        time: times[Math.floor(Math.random() * times.length)],
+        type: appointmentTypes[Math.floor(Math.random() * appointmentTypes.length)],
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+      });
+    }
+
+    return appointments;
+  };
+
+  const generateExercises = () => {
+    const exerciseNames = [
+      "Shoulder Mobility",
+      "Knee Stability",
+      "Core Strengthening",
+      "Hip Flexor Stretch",
+      "Balance Training",
+      "Rotator Cuff Exercise",
+      "Ankle Mobility",
+      "Posture Correction",
+      "Neck Stretches",
+      "Lower Back Routine"
+    ];
+
+    const timeframes = ["Today", "Yesterday", "2 days ago", "3 days ago", "This morning"];
+    const durations = ["10 min", "15 min", "20 min", "25 min", "30 min"];
+
+    // Generate 3-5 random exercises
+    const count = Math.floor(Math.random() * 3) + 3;
+    const exercises = [];
+
+    for (let i = 0; i < count; i++) {
+      const sets = Math.floor(Math.random() * 3) + 2;
+      const reps = Math.floor(Math.random() * 10) + 8;
+      const progress = Math.floor(Math.random() * 60) + 40; // 40-100%
+
+      exercises.push({
+        id: i + 1,
+        name: exerciseNames[Math.floor(Math.random() * exerciseNames.length)],
+        lastPerformed: timeframes[Math.floor(Math.random() * timeframes.length)],
+        duration: durations[Math.floor(Math.random() * durations.length)],
+        sets,
+        reps,
+        progress,
+      });
+    }
+
+    return exercises;
+  };
+
+  const generateMessages = () => {
+    const senders = [
+      { name: "Dr. Sarah Johnson", image: "/caring-doctor.png" },
+      { name: "Reception", image: "/friendly-receptionist.png" },
+      { name: "Dr. Michael Chen", image: "/athletic-man-short-hair.png" },
+      { name: "Appointment System", image: "/placeholder-logo.png" }
+    ];
+
+    const messageTemplates = [
+      "How are you feeling after yesterday's session? Any soreness or discomfort?",
+      "Your insurance claim has been processed successfully. No further action needed.",
+      "I've reviewed your progress data. Great improvement on your {exercise} exercises!",
+      "Reminder: Your next appointment is scheduled for {date} at {time}.",
+      "New exercise routine has been added to your program. Please review when you have time.",
+      "Your recent assessment shows significant improvement in mobility. Keep up the good work!",
+      "Please complete the feedback form for your last session when you have a moment."
+    ];
+
+    const timeframes = ["Just now", "5 minutes ago", "30 minutes ago", "1 hour ago", "2 hours ago", "Yesterday"];
+
+    // Generate 2-4 random messages
+    const count = Math.floor(Math.random() * 3) + 2;
+    const messages = [];
+
+    for (let i = 0; i < count; i++) {
+      const sender = senders[Math.floor(Math.random() * senders.length)];
+      let message = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
+
+      // Replace placeholders
+      message = message.replace("{exercise}", ["shoulder", "knee", "core", "balance"][Math.floor(Math.random() * 4)]);
+      message = message.replace("{date}", ["May 25", "May 28", "June 2"][Math.floor(Math.random() * 3)]);
+      message = message.replace("{time}", ["9:00 AM", "2:30 PM", "4:15 PM"][Math.floor(Math.random() * 3)]);
+
+      messages.push({
+        id: i + 1,
+        sender: sender.name,
+        senderImage: sender.image,
+        message,
+        time: timeframes[Math.floor(Math.random() * timeframes.length)],
+        unread: Math.random() > 0.5, // 50% chance of being unread
+      });
+    }
+
+    return messages;
+  };
+
+  const generateProgressMetrics = () => {
+    return [
+      {
+        id: 1,
+        name: "Range of Motion",
+        current: Math.floor(Math.random() * 40) + 80, // 80-120
+        target: 120,
+        unit: "degrees",
+        change: `+${Math.floor(Math.random() * 8) + 2}`, // +2 to +10
+        trend: "up",
+      },
+      {
+        id: 2,
+        name: "Pain Level",
+        current: Math.floor(Math.random() * 4) + 1, // 1-5
+        target: 0,
+        unit: "/10",
+        change: `-${Math.floor(Math.random() * 2) + 1}`, // -1 or -2
+        trend: "down",
+      },
+      {
+        id: 3,
+        name: "Strength",
+        current: Math.floor(Math.random() * 25) + 60, // 60-85
+        target: 85,
+        unit: "%",
+        change: `+${Math.floor(Math.random() * 10) + 5}`, // +5 to +15
+        trend: "up",
+      },
+    ];
+  };
+
+  // State with dynamic data
+  const [upcomingAppointments, setUpcomingAppointments] = useState(generateAppointments());
+  const [recentExercises, setRecentExercises] = useState(generateExercises());
+  const [messages, setMessages] = useState(generateMessages());
+  const [progressMetrics, setProgressMetrics] = useState(generateProgressMetrics());
+
+  // Simulate real-time updates
+  useEffect(() => {
+    // Update data every 30 seconds to simulate real-time changes
+    const interval = setInterval(() => {
+      // 20% chance to update appointments
+      if (Math.random() < 0.2) {
+        setUpcomingAppointments(generateAppointments());
+      }
+
+      // 30% chance to update exercises
+      if (Math.random() < 0.3) {
+        setRecentExercises(generateExercises());
+      }
+
+      // 40% chance to update messages
+      if (Math.random() < 0.4) {
+        setMessages(generateMessages());
+      }
+
+      // 25% chance to update progress metrics
+      if (Math.random() < 0.25) {
+        setProgressMetrics(generateProgressMetrics());
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#f0f4f9]">
