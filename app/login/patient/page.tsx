@@ -15,10 +15,21 @@ import { useAuth } from "@/components/auth-provider"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function PatientLoginPage() {
+  // Login form state
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+
+  // Register form state
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [registerEmail, setRegisterEmail] = useState("")
+  const [registerPassword, setRegisterPassword] = useState("")
+  const [registerError, setRegisterError] = useState("")
+  const [registerSuccess, setRegisterSuccess] = useState(false)
+  const [isRegistering, setIsRegistering] = useState(false)
+
   const { user, login, isLoading: authLoading } = useAuth()
   const router = useRouter()
 
@@ -58,6 +69,51 @@ export default function PatientLoginPage() {
       setIsLoading(false)
     }
   }
+
+  // Handle registration form submission
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterError("");
+    setIsRegistering(true);
+
+    try {
+      // Validate form
+      if (!firstName || !lastName || !registerEmail || !registerPassword) {
+        setRegisterError("All fields are required");
+        return;
+      }
+
+      if (registerPassword.length < 8) {
+        setRegisterError("Password must be at least 8 characters");
+        return;
+      }
+
+      // For demo purposes, we'll simulate a successful registration
+      console.log("Registering user:", { firstName, lastName, registerEmail });
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Show success message and reset form
+      setRegisterSuccess(true);
+      setFirstName("");
+      setLastName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+
+      // Automatically switch to login tab after successful registration
+      setTimeout(() => {
+        document.getElementById("login-tab")?.click();
+        setEmail(registerEmail);
+      }, 1500);
+
+    } catch (err) {
+      setRegisterError("An error occurred during registration. Please try again.");
+      console.error(err);
+    } finally {
+      setIsRegistering(false);
+    }
+  };
 
   // For demo purposes, let's add a quick login function
   const handleQuickLogin = async (userType: string) => {
@@ -244,64 +300,107 @@ export default function PatientLoginPage() {
                 </div>
               </div>
 
-              <form className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              {registerSuccess ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="h-8 w-8 text-green-500" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">Registration Successful!</h3>
+                  <p className="text-gray-600 mb-4">Your account has been created successfully.</p>
+                  <p className="text-sm text-gray-500">You can now log in with your credentials.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleRegister} className="space-y-4">
+                  {registerError && (
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{registerError}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-gray-700">
+                        First Name
+                      </Label>
+                      <Input
+                        id="firstName"
+                        placeholder="Enter first name"
+                        className="py-6"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="text-gray-700">
+                        Last Name
+                      </Label>
+                      <Input
+                        id="lastName"
+                        placeholder="Enter last name"
+                        className="py-6"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-gray-700">
-                      First Name
+                    <Label htmlFor="registerEmail" className="text-gray-700">
+                      Email
                     </Label>
-                    <Input id="firstName" placeholder="Enter first name" className="py-6" required />
+                    <div className="relative">
+                      <Input
+                        id="registerEmail"
+                        type="email"
+                        placeholder="Enter your email address"
+                        className="pl-10 py-6"
+                        value={registerEmail}
+                        onChange={(e) => setRegisterEmail(e.target.value)}
+                        required
+                      />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-gray-700">
-                      Last Name
+                    <Label htmlFor="registerPassword" className="text-gray-700">
+                      Password
                     </Label>
-                    <Input id="lastName" placeholder="Enter last name" className="py-6" required />
+                    <div className="relative">
+                      <Input
+                        id="registerPassword"
+                        type="password"
+                        placeholder="Create a password"
+                        className="pl-10 py-6"
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                        required
+                      />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Password must be at least 8 characters with a number and special character
+                    </p>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="registerEmail" className="text-gray-700">
-                    Email
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="registerEmail"
-                      type="email"
-                      placeholder="Enter your email address"
-                      className="pl-10 py-6"
-                      required
-                    />
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="registerPassword" className="text-gray-700">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="registerPassword"
-                      type="password"
-                      placeholder="Create a password"
-                      className="pl-10 py-6"
-                      required
-                    />
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Password must be at least 8 characters with a number and special character
-                  </p>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full py-6 bg-[#53d08a] hover:bg-[#31bd7c] text-white font-medium rounded-md mt-4"
-                >
-                  Create Account
-                </Button>
-              </form>
+                  <Button
+                    type="submit"
+                    className="w-full py-6 bg-[#53d08a] hover:bg-[#31bd7c] text-white font-medium rounded-md mt-4"
+                    disabled={isRegistering}
+                  >
+                    {isRegistering ? (
+                      <>
+                        <span className="animate-spin mr-2">⟳</span> Creating Account...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
+                </form>
+              )}
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-500">
