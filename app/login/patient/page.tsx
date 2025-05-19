@@ -25,13 +25,8 @@ export default function PatientLoginPage() {
   // Check if user is already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      if (user.role === "patient") {
-        router.push("/dashboard")
-      } else if (user.role === "provider") {
-        router.push("/dashboard/provider")
-      } else {
-        router.push("/")
-      }
+      // Redirect all users to dashboard
+      router.push("/dashboard")
     }
   }, [user, authLoading, router])
 
@@ -50,16 +45,8 @@ export default function PatientLoginPage() {
       if (success) {
         // Add a small delay to ensure the user state is updated
         setTimeout(() => {
-          if (email.toLowerCase() === "sarah@example.com") {
-            console.log("Redirecting to patient dashboard")
-            router.push("/dashboard")
-          } else if (email.toLowerCase() === "johnson@clinic.com") {
-            console.log("Redirecting to provider dashboard")
-            router.push("/dashboard/provider")
-          } else {
-            console.log("Redirecting to home")
-            router.push("/")
-          }
+          console.log("Redirecting to dashboard")
+          router.push("/dashboard")
         }, 100)
       } else {
         setError("Login failed. Please check your credentials and try again.")
