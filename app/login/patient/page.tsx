@@ -60,13 +60,40 @@ export default function PatientLoginPage() {
   }
 
   // For demo purposes, let's add a quick login function
-  const handleQuickLogin = (userType: string) => {
+  const handleQuickLogin = async (userType: string) => {
+    let loginEmail = "";
+    let loginPassword = "";
+
     if (userType === "patient") {
-      setEmail("sarah@example.com")
-      setPassword("password123")
+      loginEmail = "sarah@example.com";
+      loginPassword = "password123";
     } else if (userType === "provider") {
-      setEmail("johnson@clinic.com")
-      setPassword("doctor123")
+      loginEmail = "johnson@clinic.com";
+      loginPassword = "doctor123";
+    }
+
+    setEmail(loginEmail);
+    setPassword(loginPassword);
+
+    // Automatically login after setting credentials
+    setError("");
+    setIsLoading(true);
+
+    try {
+      console.log("Quick login with:", loginEmail, loginPassword);
+      const success = await login(loginEmail, loginPassword);
+
+      if (success) {
+        console.log("Quick login successful, redirecting to dashboard");
+        router.push("/dashboard");
+      } else {
+        setError("Login failed. Please check your credentials and try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   }
 

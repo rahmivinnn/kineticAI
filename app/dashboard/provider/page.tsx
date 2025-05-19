@@ -23,6 +23,7 @@ import {
   Search,
   Plus,
   LogOut,
+  Camera,
 } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 
@@ -195,6 +196,12 @@ export default function ProviderDashboardPage() {
           >
             <FileText className="w-5 h-5" />
           </Link>
+          <Link
+            href="/pose-estimation"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Camera className="w-5 h-5" />
+          </Link>
         </nav>
 
         <div className="mt-auto flex flex-col items-center space-y-6">
@@ -224,7 +231,7 @@ export default function ProviderDashboardPage() {
         <div className="p-8">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-[#111827]">Welcome back, Dr. {user?.name || "Johnson"}</h1>
+            <h1 className="text-2xl font-bold text-[#111827]">Welcome back, {user?.name || "Doctor"}</h1>
             <p className="text-gray-500">Here's an overview of your practice and patients</p>
           </div>
 

@@ -21,15 +21,17 @@ const MOCK_USERS = [
     id: "1",
     email: "sarah@example.com",
     password: "password123",
-    name: "Sarah Miller",
+    name: "Alex Johnson",
     role: "patient" as UserRole,
+    avatar: "/smiling-brown-haired-woman.png"
   },
   {
     id: "2",
     email: "johnson@clinic.com",
     password: "doctor123",
-    name: "Dr. Johnson",
+    name: "Dr. Rebecca Chen",
     role: "provider" as UserRole,
+    avatar: "/caring-doctor.png"
   },
   {
     id: "3",
@@ -38,6 +40,28 @@ const MOCK_USERS = [
     name: "Admin User",
     role: "admin" as UserRole,
   },
+  {
+    id: "4",
+    email: "michael@example.com",
+    password: "password123",
+    name: "Michael Smith",
+    role: "patient" as UserRole,
+    avatar: "/athletic-man-short-hair.png"
+  },
+  {
+    id: "5",
+    email: "emily@example.com",
+    password: "password123",
+    name: "Emily Davis",
+    role: "patient" as UserRole,
+  },
+  {
+    id: "6",
+    email: "williams@clinic.com",
+    password: "doctor123",
+    name: "Dr. Williams",
+    role: "provider" as UserRole,
+  }
 ]
 
 interface AuthContextType {
