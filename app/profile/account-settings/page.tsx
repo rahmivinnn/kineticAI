@@ -1,11 +1,142 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { ChevronRight, Globe, Moon, Shield, Mail, Clock, Download } from "lucide-react"
+import { ChevronRight, Globe, Moon, Shield, Mail, Clock, Download, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export default function AccountSettingsPage() {
+  const { toast } = useToast()
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+  const [darkModeEnabled, setDarkModeEnabled] = useState(false)
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+
+  const handleTwoFactorToggle = () => {
+    const newState = !twoFactorEnabled
+    setTwoFactorEnabled(newState)
+
+    toast({
+      title: newState ? "Two-factor authentication enabled" : "Two-factor authentication disabled",
+      description: newState
+        ? "Your account is now more secure."
+        : "Two-factor authentication has been turned off.",
+      action: <ToastAction altText="Close">Close</ToastAction>,
+    })
+  }
+
+  const handleDarkModeToggle = () => {
+    const newState = !darkModeEnabled
+    setDarkModeEnabled(newState)
+
+    toast({
+      title: newState ? "Dark mode enabled" : "Dark mode disabled",
+      description: "Your preference has been saved.",
+      action: <ToastAction altText="Close">Close</ToastAction>,
+    })
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setPasswordData(prev => ({
+      ...prev,
+      [id]: value
+    }))
+  }
+
+  const handlePasswordSubmit = () => {
+    // Validate passwords
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your new password and confirmation match.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      toast({
+        title: "Password too short",
+        description: "Your password must be at least 8 characters long.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsChangingPassword(true)
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsChangingPassword(false)
+      setPasswordDialogOpen(false)
+
+      // Reset form
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      })
+
+      toast({
+        title: "Password changed successfully",
+        description: "Your password has been updated.",
+        action: <ToastAction altText="Close">Close</ToastAction>,
+      })
+    }, 1500)
+  }
+
+  const handleLanguageSelect = () => {
+    toast({
+      title: "Language selection",
+      description: "Language preferences updated.",
+      action: <ToastAction altText="Close">Close</ToastAction>,
+    })
+  }
+
+  const handleTimezoneSelect = () => {
+    toast({
+      title: "Timezone selection",
+      description: "Timezone preferences updated.",
+      action: <ToastAction altText="Close">Close</ToastAction>,
+    })
+  }
+
+  const handleRequestData = () => {
+    toast({
+      title: "Data request submitted",
+      description: "We'll process your request and email you when your data is ready to download.",
+      action: <ToastAction altText="Close">Close</ToastAction>,
+    })
+  }
+
+  const handleDeactivateAccount = () => {
+    toast({
+      title: "Account deactivation",
+      description: "Please contact support to deactivate your account.",
+      variant: "destructive",
+      action: <ToastAction altText="Contact Support">Contact Support</ToastAction>,
+    })
+  }
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
@@ -51,9 +182,69 @@ export default function AccountSettingsPage() {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full sm:w-auto">
-              Change Password
-            </Button>
+            <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  Change Password
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Change Password</DialogTitle>
+                  <DialogDescription>
+                    Enter your current password and a new password to update your credentials.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordChange}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setPasswordDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handlePasswordSubmit}
+                    disabled={isChangingPassword}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isChangingPassword ? (
+                      <>
+                        <span className="mr-2">Saving...</span>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -65,7 +256,10 @@ export default function AccountSettingsPage() {
                   <div className="text-sm text-muted-foreground">Add an extra layer of security to your account</div>
                 </div>
               </div>
-              <Switch checked={false} />
+              <Switch
+                checked={twoFactorEnabled}
+                onCheckedChange={handleTwoFactorToggle}
+              />
             </div>
           </div>
         </div>
@@ -85,7 +279,7 @@ export default function AccountSettingsPage() {
                   <div className="text-sm text-muted-foreground">English (US)</div>
                 </div>
               </div>
-              <Button variant="ghost">Select</Button>
+              <Button variant="ghost" onClick={handleLanguageSelect}>Select</Button>
             </div>
 
             <div className="flex items-center justify-between">
@@ -98,7 +292,7 @@ export default function AccountSettingsPage() {
                   <div className="text-sm text-muted-foreground">Pacific Time (US & Canada)</div>
                 </div>
               </div>
-              <Button variant="ghost">Select</Button>
+              <Button variant="ghost" onClick={handleTimezoneSelect}>Select</Button>
             </div>
 
             <div className="flex items-center justify-between">
@@ -111,7 +305,10 @@ export default function AccountSettingsPage() {
                   <div className="text-sm text-muted-foreground">Use dark theme throughout the app</div>
                 </div>
               </div>
-              <Switch checked={false} />
+              <Switch
+                checked={darkModeEnabled}
+                onCheckedChange={handleDarkModeToggle}
+              />
             </div>
           </div>
         </div>
@@ -175,11 +372,20 @@ export default function AccountSettingsPage() {
                   Get a copy of your personal data in a machine-readable format
                 </p>
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700">Request Data</Button>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={handleRequestData}
+              >
+                Request Data
+              </Button>
             </div>
           </div>
 
-          <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
+          <Button
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+            onClick={handleDeactivateAccount}
+          >
             Deactivate Account
           </Button>
         </div>
