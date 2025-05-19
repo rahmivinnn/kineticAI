@@ -11,15 +11,20 @@ export default function ProviderDashboardLayout({ children }: { children: React.
   const router = useRouter()
 
   useEffect(() => {
-    // Only redirect if not logged in
-    if (!isLoading && !user) {
-      console.log("No user found, redirecting to login")
-      router.push("/login/patient")
+    // Check if user is logged in and is a provider
+    if (!isLoading) {
+      if (!user) {
+        console.log("No user found, redirecting to provider login")
+        router.push("/login/provider")
+      } else if (user.role !== "provider") {
+        console.log("User is not a provider, redirecting to appropriate dashboard")
+        router.push("/dashboard")
+      }
     }
   }, [user, isLoading, router])
 
-  // If no user, return empty until redirect happens
-  if (!user && !isLoading) {
+  // If no user or not a provider, return empty until redirect happens
+  if ((!user || user.role !== "provider") && !isLoading) {
     return null
   }
 

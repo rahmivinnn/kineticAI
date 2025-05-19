@@ -276,7 +276,7 @@ export default function PatientLoginPage() {
               </div>
 
               <div className="mt-6 text-center">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 mb-2">
                   Don&apos;t have an account?{" "}
                   <button
                     className="text-[#3e82e7] hover:underline"
@@ -284,6 +284,12 @@ export default function PatientLoginPage() {
                   >
                     Register now
                   </button>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Are you a healthcare provider?{" "}
+                  <Link href="/login/provider" className="text-[#3e82e7] hover:underline">
+                    Provider Login
+                  </Link>
                 </p>
               </div>
             </div>
