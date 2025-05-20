@@ -36,7 +36,7 @@ export default function VideoLibraryPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic-ai-logo.png" alt="Kinetic Logo" width={40} height={40} />
+          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={40} height={40} />
           <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
         </div>
 

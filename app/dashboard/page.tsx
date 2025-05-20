@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -230,7 +230,7 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
+          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={60} height={60} />
           <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
         </div>
 

@@ -10,14 +10,6 @@ import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import {
-  Home,
-  Activity,
-  Users,
-  MessageSquare,
-  BarChart2,
-  FileText,
-  User,
-  Settings,
   Camera,
   Video,
   VideoOff,
@@ -32,10 +24,10 @@ import {
   Pause,
   RotateCcw,
   Share2,
-  LogOut,
 } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 import { VideoCall } from "@/components/video-call"
+import { DashboardLayout } from "@/components/dashboard-layout"
 
 export default function PoseEstimationPage() {
   const { user, logout } = useAuth()
@@ -581,84 +573,8 @@ export default function PoseEstimationPage() {
   }, [])
 
   return (
-    <div className="flex h-screen bg-[#f0f4f9]">
-      {/* Sidebar */}
-      <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
-        <div className="mb-8">
-          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
-          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
-        </div>
-
-        <nav className="flex flex-col items-center space-y-6 flex-1">
-          <Link
-            href="/dashboard"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <Home className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/exercises"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <Activity className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/appointments"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <Users className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/messages"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <MessageSquare className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/progress"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <BarChart2 className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/video-library"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <FileText className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/pose-estimation"
-            className="w-10 h-10 rounded-xl bg-[#7e58f4] bg-opacity-20 flex items-center justify-center text-white"
-          >
-            <Camera className="w-5 h-5" />
-          </Link>
-        </nav>
-
-        <div className="mt-auto flex flex-col items-center space-y-6">
-          <Link
-            href="/profile"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <User className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/settings"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <Settings className="w-5 h-5" />
-          </Link>
-          <button
-            onClick={logout}
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
+    <DashboardLayout activeLink="pose-estimation">
+      <div className="p-8">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold text-[#111827]">Motion Analysis & Pose Estimation</h1>
@@ -1222,6 +1138,6 @@ export default function PoseEstimationPage() {
           onToggleMinimize={toggleVideoCallMinimized}
         />
       )}
-    </div>
+    </DashboardLayout>
   )
 }

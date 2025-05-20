@@ -33,7 +33,7 @@ export function LogoLoading({ size = "medium", className }: LogoLoadingProps) {
         {/* Logo with fixed dimensions to prevent distortion */}
         <div className="relative" style={{ width: dimensions.width, height: dimensions.height }}>
           <Image
-            src="/blue-wave-logo.png"
+            src="/kinetic-new-logo.png"
             alt="Kinetic Logo"
             width={dimensions.width}
             height={dimensions.height}

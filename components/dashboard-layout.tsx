@@ -2,13 +2,13 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { Home, Activity, Users, MessageSquare, BarChart2, FileText, User, Settings, LogOut } from "lucide-react"
+import { Home, Activity, Users, MessageSquare, BarChart2, FileText, User, Settings, LogOut, Camera } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 import { Logo } from "@/components/logo"
 
 interface DashboardLayoutProps {
   children: ReactNode
-  activeLink?: "home" | "exercises" | "appointments" | "messages" | "progress" | "videos" | "profile" | "settings"
+  activeLink?: "home" | "exercises" | "appointments" | "messages" | "progress" | "videos" | "profile" | "settings" | "pose-estimation"
 }
 
 export function DashboardLayout({ children, activeLink = "home" }: DashboardLayoutProps) {
@@ -70,6 +70,14 @@ export function DashboardLayout({ children, activeLink = "home" }: DashboardLayo
             } flex items-center justify-center text-white`}
           >
             <FileText className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/pose-estimation"
+            className={`w-10 h-10 rounded-xl ${
+              activeLink === "pose-estimation" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white`}
+          >
+            <Camera className="w-5 h-5" />
           </Link>
         </nav>
 

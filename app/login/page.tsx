@@ -7,7 +7,7 @@ export default function Login() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#001a41] to-[#003366] p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={100} height={100} />
+          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={100} height={100} />
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">Welcome to Kinetic</h1>
         <p className="text-xl text-white">Choose your login portal</p>

@@ -12,7 +12,7 @@ export default function PersonalizedPlanPage() {
       <header className="bg-[#111827] text-white">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={40} height={40} />
+            <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={40} height={40} />
             <span className="font-bold text-xl text-white">KINETIC</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-8">

@@ -157,7 +157,7 @@ export default function PatientLoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#000a2c] to-[#00487c] p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} />
+          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={80} height={80} />
         </div>
         <h1 className="text-3xl font-bold text-white mb-1"></h1>
         <p className="text-xl text-white">Patient Portal</p>
@@ -180,8 +180,8 @@ export default function PatientLoginPage() {
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800">Patient Access</h2>
-                  <p className="text-gray-500 text-sm">
+                  <h2 className="text-xl font-semibold text-black">Patient Access</h2>
+                  <p className="text-black text-sm">
                     Access your personalized recovery plan and track your progress
                   </p>
                 </div>
@@ -196,7 +196,7 @@ export default function PatientLoginPage() {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700">
+                  <Label htmlFor="email" className="text-black">
                     Email
                   </Label>
                   <div className="relative">
@@ -214,7 +214,7 @@ export default function PatientLoginPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700">
+                  <Label htmlFor="password" className="text-black">
                     Password
                   </Label>
                   <div className="relative">

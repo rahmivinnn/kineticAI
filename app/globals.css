@@ -71,7 +71,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-black;
+  }
+  p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, select, label {
+    @apply text-black;
   }
 }
 
@@ -218,4 +221,36 @@
 
 .animate-pulse-subtle {
   animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Force text to be black */
+p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, select, label, li {
+  color: black !important;
+}
+
+/* Exception for white text in specific components */
+.bg-gradient-to-br p,
+.bg-gradient-to-br h1,
+.bg-gradient-to-br h2,
+.bg-gradient-to-br h3,
+.bg-gradient-to-br h4,
+.bg-gradient-to-br h5,
+.bg-gradient-to-br h6,
+.bg-gradient-to-br span,
+.bg-gradient-to-br div,
+.bg-gradient-to-br a,
+.bg-gradient-to-br button,
+.bg-gradient-to-b p,
+.bg-gradient-to-b h1,
+.bg-gradient-to-b h2,
+.bg-gradient-to-b h3,
+.bg-gradient-to-b h4,
+.bg-gradient-to-b h5,
+.bg-gradient-to-b h6,
+.bg-gradient-to-b span,
+.bg-gradient-to-b div,
+.bg-gradient-to-b a,
+.bg-gradient-to-b button,
+.text-white {
+  color: white !important;
 }
