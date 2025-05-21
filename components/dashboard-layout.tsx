@@ -6,14 +6,8 @@ import { Home, Activity, Users, MessageSquare, BarChart2, FileText, User, Settin
 import { useAuth } from "@/components/auth-provider"
 import { Logo } from "@/components/logo"
 
-interface DashboardLayoutProps {
-  children: ReactNode
-  activeLink?: "home" | "exercises" | "appointments" | "messages" | "progress" | "videos" | "profile" | "settings" | "pose-estimation"
-}
 
-export function DashboardLayout({ children, activeLink = "home" }: DashboardLayoutProps) {
-  const { user, logout } = useAuth()
-
+export function DashboardLayout({ children, activeLink }: { children: React.ReactNode; activeLink: string }) {
   return (
     <div className="flex h-screen bg-[#f0f4f9]">
       {/* Sidebar */}
