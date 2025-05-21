@@ -390,11 +390,9 @@ export default function ProviderLoginPage() {
       Are you a patient?{" "}
       <Link href="/login/patient" className="text-white hover:underline">
         Patient Login
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    </Link>
+    </p>
+  </div>
+</div>
   )
 }
