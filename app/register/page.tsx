@@ -14,7 +14,7 @@ export default function Register() {
         <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="flex justify-center w-full">
-              <Image src="/kinetic-logo.png" alt="Kinetic" width={80} height={80} />
+              <Image src="/kinetic-new-logo.png" alt="Kinetic" width={80} height={80} />
             </div>
             <h1 className="text-2xl font-bold">Create your account</h1>
             <p className="text-sm text-gray-500">Sign up to start your recovery journey</p>

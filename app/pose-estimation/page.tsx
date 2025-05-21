@@ -574,7 +574,7 @@ export default function PoseEstimationPage() {
 
   return (
     <DashboardLayout activeLink="pose-estimation">
-      <div className="p-8">
+      <main className="flex-1 p-8">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold text-[#111827]">Motion Analysis & Pose Estimation</h1>

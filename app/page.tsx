@@ -283,7 +283,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
+                <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={60} height={60} />
               </div>
               <p className="text-sm text-[#9ca3af] mb-4">
                 Transforming rehabilitation through movement intelligence and personalized care.
