@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#001a41] to-[#00487c] p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} />
+          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={80} height={80} />
         </div>
         {/* Removed KINETIC text */}
         <div className="mt-2">

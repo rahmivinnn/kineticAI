@@ -5,9 +5,17 @@ import Link from "next/link"
 import { Home, Activity, Users, MessageSquare, BarChart2, FileText, User, Settings, LogOut, Camera } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 import { Logo } from "@/components/logo"
+import { useRouter } from "next/navigation"
 
 
-export function DashboardLayout({ children, activeLink }: { children: React.ReactNode; activeLink: string }) {
+export function DashboardLayout({ children, activeLink = "home" }: { children: React.ReactNode; activeLink?: string }) {
+  const { signOut } = useAuth()
+  const router = useRouter()
+
+  const logout = async () => {
+    await signOut()
+    router.push("/")
+  }
   return (
     <div className="flex h-screen bg-[#f0f4f9]">
       {/* Sidebar */}

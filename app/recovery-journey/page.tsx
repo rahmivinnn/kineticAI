@@ -40,12 +40,6 @@ export default function RecoveryJourneyPage() {
               Resources
             </Link>
           </nav>
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" className="text-white hover:text-[#9ca3af]">
-              Log In
-            </Button>
-            <Button className="bg-white text-[#111827] hover:bg-[#f3f4f6]">Book Consultation</Button>
-          </div>
         </div>
       </header>
 
@@ -349,7 +343,7 @@ export default function RecoveryJourneyPage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-16">
+        <section id="success-stories" className="py-16">
           <div className="container mx-auto px-4">
             <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-lg overflow-hidden mb-16">
               <Image src="/group-therapy-session.jpg" alt="Group Therapy Session" fill className="object-cover" />
@@ -427,7 +421,7 @@ export default function RecoveryJourneyPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 bg-[#f9fafb]">
+        <section id="resources" className="py-16 bg-[#f9fafb]">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-[#111827] mb-4">Frequently Asked Questions</h2>
@@ -489,16 +483,6 @@ export default function RecoveryJourneyPage() {
             <p className="mb-8 max-w-2xl mx-auto">
               Join a community of successful recoveries supported by cutting-edge rehabilitation technology
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/free-trial">
-                <Button className="bg-white text-[#111827] hover:bg-[#f3f4f6]">Start Free Trial</Button>
-              </Link>
-              <Link href="/schedule-demo">
-                <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                  Schedule Demo
-                </Button>
-              </Link>
-            </div>
           </div>
         </section>
       </main>
@@ -509,7 +493,7 @@ export default function RecoveryJourneyPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={32} height={32} />
+                <Image src="/kinetic logo.png" alt="Kinetic Logo" width={32} height={32} />
                 <span className="font-bold text-xl">KINETIC</span>
               </div>
               <p className="text-sm text-[#9ca3af] mb-4">
