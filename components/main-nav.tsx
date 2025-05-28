@@ -6,7 +6,13 @@ export function MainNav() {
   return (
     <div className="flex items-center space-x-4 lg:space-x-6">
       <Link href="/" className="flex items-center space-x-2">
-        <Image src="/kinetic-new-logo.png" alt="Kinetic" width={60} height={60} />
+        <Image
+          src="/kinetic-logo.png"
+          alt="Kinetic"
+          width={60}
+          height={60}
+          className="h-12 w-auto"
+        />
       </Link>
       <nav className="hidden md:flex items-center space-x-6">
         <ScrollLink

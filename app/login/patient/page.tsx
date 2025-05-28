@@ -36,8 +36,8 @@ export default function PatientLoginPage() {
   // Check if user is already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      // Redirect all users to dashboard
-      router.push("/dashboard")
+      // Don't auto-redirect, let user manually navigate
+      console.log("User logged in:", user)
     }
   }, [user, authLoading, router])
 
@@ -47,20 +47,21 @@ export default function PatientLoginPage() {
     setIsLoading(true)
 
     try {
-      // For testing purposes, let's add some console logs
-      console.log("Attempting login with:", email, password)
-
-      const success = await login(email, password)
-      console.log("Login success:", success)
+      const { success, error } = await login(email, password)
 
       if (success) {
-        // Add a small delay to ensure the user state is updated
-        setTimeout(() => {
-          console.log("Redirecting to dashboard")
-          router.push("/dashboard")
-        }, 100)
+        // Get the logged in user from localStorage since state might not be updated yet
+        const loggedInUser = JSON.parse(localStorage.getItem("kineticUser") || "{}")
+        
+        if (loggedInUser.role === "patient") {
+          // Show success message but don't auto-redirect
+          setError("")
+          // User can manually navigate using the dashboard button
+        } else {
+          setError("This login is for patients only. Please use the provider login.")
+        }
       } else {
-        setError("Login failed. Please check your credentials and try again.")
+        setError(error || "Login failed. Please check your credentials and try again.")
       }
     } catch (err) {
       setError("An error occurred. Please try again.")
@@ -136,14 +137,19 @@ export default function PatientLoginPage() {
     setIsLoading(true);
 
     try {
-      console.log("Quick login with:", loginEmail, loginPassword);
-      const success = await login(loginEmail, loginPassword);
+      const { success, error } = await login(loginEmail, loginPassword);
 
       if (success) {
-        console.log("Quick login successful, redirecting to dashboard");
-        router.push("/dashboard");
+        // Get the logged in user from localStorage since state might not be updated yet
+        const loggedInUser = JSON.parse(localStorage.getItem("kineticUser") || "{}")
+        
+        if (loggedInUser.role === "patient") {
+          router.push("/dashboard");
+        } else {
+          setError("This login is for patients only. Please use the provider login.");
+        }
       } else {
-        setError("Login failed. Please check your credentials and try again.");
+        setError(error || "Login failed. Please check your credentials and try again.");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -157,7 +163,7 @@ export default function PatientLoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#000a2c] to-[#00487c] p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={80} height={80} />
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} />
         </div>
         <h1 className="text-3xl font-bold text-white mb-1"></h1>
         <p className="text-xl text-white">Patient Portal</p>

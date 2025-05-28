@@ -167,8 +167,7 @@ export default function PatientManagementPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={60} height={60} />
-          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
         </div>
 
         <nav className="flex flex-col items-center space-y-6 flex-1">
@@ -391,9 +390,7 @@ export default function PatientManagementPage() {
                             <DropdownMenuItem>
                               <Phone className="mr-2 h-4 w-4" /> Call Patient
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Camera className="mr-2 h-4 w-4" /> OpenPose Analysis
-                            </DropdownMenuItem>
+
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-red-600">
                               <Trash className="mr-2 h-4 w-4" /> Delete Patient

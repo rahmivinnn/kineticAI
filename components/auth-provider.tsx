@@ -100,22 +100,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Find user with matching credentials
-    const foundUser = MOCK_USERS.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password)
+      // Find user with matching credentials - allow any email/password combination
+      const foundUser = MOCK_USERS.find((u) => u.email.toLowerCase() === email.toLowerCase()) || 
+                       MOCK_USERS.find((u) => u.email.toLowerCase().includes(email.toLowerCase().split('@')[0]))
 
-    if (foundUser) {
-      // Create user object without password
-      const { password: _, ...userWithoutPassword } = foundUser
-      setUser(userWithoutPassword)
-      localStorage.setItem("kineticUser", JSON.stringify(userWithoutPassword))
-      return true
+      if (foundUser || email && password) {
+        // If no exact match found, create a default user based on email pattern
+        let userToLogin = foundUser
+        if (!foundUser) {
+          const isProvider = email.toLowerCase().includes('provider') || email.toLowerCase().includes('doctor') || email.toLowerCase().includes('clinic')
+          userToLogin = {
+            id: Date.now().toString(),
+            email: email,
+            password: password,
+            name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+            role: isProvider ? 'provider' as UserRole : 'patient' as UserRole,
+            avatar: isProvider ? '/caring-doctor.png' : '/smiling-brown-haired-woman.png'
+          }
+        }
+        
+        // Create user object without password
+        const { password: _, ...userWithoutPassword } = userToLogin
+        setUser(userWithoutPassword)
+        localStorage.setItem("kineticUser", JSON.stringify(userWithoutPassword))
+        return { success: true }
+      }
+
+      return { success: false, error: "Please enter valid credentials" }
+    } catch (error) {
+      console.error("Login error:", error)
+      return { success: false, error: "An error occurred during login" }
     }
-
-    return false
   }
 
   const logout = () => {

@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -7,6 +11,108 @@ import { SiteHeader } from "@/components/site-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function Register() {
+  const router = useRouter()
+  
+  // Patient form state
+  const [patientName, setPatientName] = useState("")
+  const [patientEmail, setPatientEmail] = useState("")
+  const [patientPassword, setPatientPassword] = useState("")
+  const [patientConfirmPassword, setPatientConfirmPassword] = useState("")
+  const [patientTerms, setPatientTerms] = useState(false)
+  
+  // Provider form state
+  const [providerName, setProviderName] = useState("")
+  const [providerEmail, setProviderEmail] = useState("")
+  const [providerPassword, setProviderPassword] = useState("")
+  const [providerConfirmPassword, setProviderConfirmPassword] = useState("")
+  const [providerLicense, setProviderLicense] = useState("")
+  const [providerTerms, setProviderTerms] = useState(false)
+  
+  // Common state
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  
+  const handlePatientRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+    
+    try {
+      // Validation
+      if (!patientName || !patientEmail || !patientPassword || !patientConfirmPassword) {
+        setError("All fields are required")
+        return
+      }
+      
+      if (patientPassword !== patientConfirmPassword) {
+        setError("Passwords do not match")
+        return
+      }
+      
+      if (patientPassword.length < 8) {
+        setError("Password must be at least 8 characters")
+        return
+      }
+      
+      if (!patientTerms) {
+        setError("You must agree to the terms and conditions")
+        return
+      }
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Redirect to success page
+      router.push("/register/success")
+      
+    } catch (err) {
+      setError("Registration failed. Please try again.")
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
+  const handleProviderRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+    
+    try {
+      // Validation
+      if (!providerName || !providerEmail || !providerPassword || !providerConfirmPassword || !providerLicense) {
+        setError("All fields are required")
+        return
+      }
+      
+      if (providerPassword !== providerConfirmPassword) {
+        setError("Passwords do not match")
+        return
+      }
+      
+      if (providerPassword.length < 8) {
+        setError("Password must be at least 8 characters")
+        return
+      }
+      
+      if (!providerTerms) {
+        setError("You must agree to the terms and conditions")
+        return
+      }
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Redirect to success page
+      router.push("/register/success")
+      
+    } catch (err) {
+      setError("Registration failed. Please try again.")
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -14,7 +120,7 @@ export default function Register() {
         <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="flex justify-center w-full">
-              <Image src="/kinetic-new-logo.png" alt="Kinetic" width={80} height={80} />
+              <Image src="/kinetic-logo.png" alt="Kinetic" width={80} height={80} />
             </div>
             <h1 className="text-2xl font-bold">Create your account</h1>
             <p className="text-sm text-gray-500">Sign up to start your recovery journey</p>
@@ -25,72 +131,170 @@ export default function Register() {
               <TabsTrigger value="provider">Provider</TabsTrigger>
             </TabsList>
             <TabsContent value="patient" className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="patient-name">Full Name</Label>
-                <Input id="patient-name" placeholder="Enter your full name" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="patient-email">Email</Label>
-                <Input id="patient-email" placeholder="Enter your email address" type="email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="patient-password">Password</Label>
-                <Input id="patient-password" placeholder="Create a password (min. 8 characters)" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="patient-confirm-password">Confirm Password</Label>
-                <Input id="patient-confirm-password" placeholder="Confirm your password" type="password" />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="patient-terms" className="h-4 w-4 rounded border-gray-300" />
-                <Label htmlFor="patient-terms" className="text-sm">
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
-              </div>
-              <Button className="w-full bg-[#001a41]">Create Account</Button>
+              <form onSubmit={handlePatientRegister}>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="patient-name">Full Name</Label>
+                  <Input 
+                    id="patient-name" 
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                    placeholder="Enter your full name" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="patient-email">Email</Label>
+                  <Input 
+                    id="patient-email" 
+                    value={patientEmail}
+                    onChange={(e) => setPatientEmail(e.target.value)}
+                    placeholder="Enter your email address" 
+                    type="email" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="patient-password">Password</Label>
+                  <Input 
+                    id="patient-password" 
+                    value={patientPassword}
+                    onChange={(e) => setPatientPassword(e.target.value)}
+                    placeholder="Create a password (min. 8 characters)" 
+                    type="password" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="patient-confirm-password">Confirm Password</Label>
+                  <Input 
+                    id="patient-confirm-password" 
+                    value={patientConfirmPassword}
+                    onChange={(e) => setPatientConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password" 
+                    type="password" 
+                    required
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="patient-terms" 
+                    checked={patientTerms}
+                    onChange={(e) => setPatientTerms(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300" 
+                  />
+                  <Label htmlFor="patient-terms" className="text-sm">
+                    I agree to the{" "}
+                    <Link href="/terms" className="text-blue-600 hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="text-blue-600 hover:underline">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                <Button 
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-[#001a41]"
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
             </TabsContent>
             <TabsContent value="provider" className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="provider-name">Full Name</Label>
-                <Input id="provider-name" placeholder="Enter your full name" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-email">Email</Label>
-                <Input id="provider-email" placeholder="Enter your email address" type="email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-password">Password</Label>
-                <Input id="provider-password" placeholder="Create a password (min. 8 characters)" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-confirm-password">Confirm Password</Label>
-                <Input id="provider-confirm-password" placeholder="Confirm your password" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-license">License Number</Label>
-                <Input id="provider-license" placeholder="Enter your professional license number" />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="provider-terms" className="h-4 w-4 rounded border-gray-300" />
-                <Label htmlFor="provider-terms" className="text-sm">
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
-              </div>
-              <Button className="w-full bg-[#001a41]">Create Account</Button>
+              <form onSubmit={handleProviderRegister}>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="provider-name">Full Name</Label>
+                  <Input 
+                    id="provider-name" 
+                    value={providerName}
+                    onChange={(e) => setProviderName(e.target.value)}
+                    placeholder="Enter your full name" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-email">Email</Label>
+                  <Input 
+                    id="provider-email" 
+                    value={providerEmail}
+                    onChange={(e) => setProviderEmail(e.target.value)}
+                    placeholder="Enter your email address" 
+                    type="email" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-password">Password</Label>
+                  <Input 
+                    id="provider-password" 
+                    value={providerPassword}
+                    onChange={(e) => setProviderPassword(e.target.value)}
+                    placeholder="Create a password (min. 8 characters)" 
+                    type="password" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-confirm-password">Confirm Password</Label>
+                  <Input 
+                    id="provider-confirm-password" 
+                    value={providerConfirmPassword}
+                    onChange={(e) => setProviderConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password" 
+                    type="password" 
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-license">License Number</Label>
+                  <Input 
+                    id="provider-license" 
+                    value={providerLicense}
+                    onChange={(e) => setProviderLicense(e.target.value)}
+                    placeholder="Enter your professional license number" 
+                    required
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="provider-terms" 
+                    checked={providerTerms}
+                    onChange={(e) => setProviderTerms(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300" 
+                  />
+                  <Label htmlFor="provider-terms" className="text-sm">
+                    I agree to the{" "}
+                    <Link href="/terms" className="text-blue-600 hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="text-blue-600 hover:underline">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                <Button 
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-[#001a41]"
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
             </TabsContent>
           </Tabs>
           <div className="relative flex items-center justify-center">

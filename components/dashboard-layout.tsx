@@ -29,7 +29,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/dashboard"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "home" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <Home className="w-5 h-5" />
           </Link>
@@ -37,7 +37,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/exercises"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "exercises" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <Activity className="w-5 h-5" />
           </Link>
@@ -45,7 +45,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/appointments"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "appointments" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <Users className="w-5 h-5" />
           </Link>
@@ -53,7 +53,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/messages"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "messages" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <MessageSquare className="w-5 h-5" />
           </Link>
@@ -61,7 +61,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/progress"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "progress" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <BarChart2 className="w-5 h-5" />
           </Link>
@@ -69,18 +69,19 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/video-library"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "videos" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <FileText className="w-5 h-5" />
           </Link>
           <Link
             href="/pose-estimation"
             className={`w-10 h-10 rounded-xl ${
-              activeLink === "pose-estimation" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+              activeLink === "pose" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <Camera className="w-5 h-5" />
           </Link>
+
         </nav>
 
         <div className="mt-auto flex flex-col items-center space-y-6">
@@ -88,7 +89,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/profile"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "profile" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <User className="w-5 h-5" />
           </Link>
@@ -96,13 +97,13 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             href="/settings"
             className={`w-10 h-10 rounded-xl ${
               activeLink === "settings" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
-            } flex items-center justify-center text-white`}
+            } flex items-center justify-center text-white transition-all duration-200 hover:scale-105`}
           >
             <Settings className="w-5 h-5" />
           </Link>
           <button
             onClick={logout}
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 hover:bg-red-500/20 flex items-center justify-center text-white transition-all duration-200 hover:scale-105"
           >
             <LogOut className="w-5 h-5" />
           </button>

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -28,7 +29,14 @@ import {
 import { useAuth } from "@/components/auth-provider"
 
 export default function ProviderDashboardPage() {
-  const { user, logout } = useAuth()
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleLogout = async () => {
+    await signOut()
+    router.push("/")
+  }
   const [todayAppointments, setTodayAppointments] = useState([
     {
       id: 1,
@@ -155,71 +163,89 @@ export default function ProviderDashboardPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={60} height={60} />
-          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
         </div>
 
         <nav className="flex flex-col items-center space-y-6 flex-1">
           <Link
             href="/dashboard/provider"
-            className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname === "/dashboard/provider" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <Home className="w-5 h-5" />
           </Link>
           <Link
-            href="/exercises"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
-          >
-            <Activity className="w-5 h-5" />
-          </Link>
-          <Link
-            href="/appointments"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            href="/dashboard/provider/patients"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/patients") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <Users className="w-5 h-5" />
           </Link>
           <Link
+            href="/appointments"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/appointments") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
+          >
+            <Calendar className="w-5 h-5" />
+          </Link>
+          <Link
             href="/messages"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/messages") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <MessageSquare className="w-5 h-5" />
           </Link>
           <Link
             href="/progress"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/progress") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <BarChart2 className="w-5 h-5" />
           </Link>
           <Link
             href="/video-library"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/video-library") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <FileText className="w-5 h-5" />
           </Link>
           <Link
             href="/pose-estimation"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/pose-estimation") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <Camera className="w-5 h-5" />
           </Link>
+
         </nav>
 
         <div className="mt-auto flex flex-col items-center space-y-6">
           <Link
             href="/profile"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/profile") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <User className="w-5 h-5" />
           </Link>
           <Link
             href="/settings"
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            className={`w-10 h-10 rounded-xl ${
+              pathname.includes("/settings") ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white transition-colors duration-200`}
           >
             <Settings className="w-5 h-5" />
           </Link>
           <button
-            onClick={logout}
-            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+            onClick={handleLogout}
+            className="w-10 h-10 rounded-xl hover:bg-white/10 hover:bg-red-500/20 flex items-center justify-center text-white transition-colors duration-200"
           >
             <LogOut className="w-5 h-5" />
           </button>
@@ -268,29 +294,7 @@ export default function ProviderDashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#7e58f4] to-[#5a3dc8] text-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">OpenPose AI</CardTitle>
-                <CardDescription className="text-purple-100">Movement analysis tool</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <Camera className="mr-2 h-5 w-5 text-purple-200" />
-                    <span>Patient analysis</span>
-                  </div>
-                  <Link href="/pose-estimation">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white text-[#7e58f4] hover:bg-purple-100 hover:text-[#5a3dc8]"
-                    >
-                      Open Tool
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+
 
             <Card>
               <CardHeader className="pb-2">
@@ -584,63 +588,7 @@ export default function ProviderDashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* OpenPose AI Analysis */}
-              <Card className="overflow-hidden">
-                <CardHeader className="pb-3 bg-gradient-to-r from-[#7e58f4] to-[#5a3dc8] text-white">
-                  <div className="flex justify-between items-center">
-                    <CardTitle>OpenPose AI Analysis</CardTitle>
-                    <Link href="/pose-estimation">
-                      <Button variant="secondary" size="sm" className="bg-white text-[#7e58f4] hover:bg-purple-100">
-                        View Tool
-                      </Button>
-                    </Link>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="relative aspect-video bg-gray-900">
-                    <Image
-                      src="/movement-intelligence.png"
-                      alt="OpenPose Analysis"
-                      fill
-                      className="object-cover opacity-80"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
-                      <h3 className="text-white font-medium mb-1">Patient Movement Analysis</h3>
-                      <p className="text-white/80 text-sm">Track patient progress with AI-powered movement analysis</p>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-medium text-gray-900">Recent Patient Analyses</h4>
-                      <span className="text-xs text-gray-500">Last updated: Today</span>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
-                        <div className="flex items-center">
-                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
-                            <Image src="/athletic-man-short-hair.png" alt="Patient" width={24} height={24} />
-                          </div>
-                          <span>John D.</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Completed</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
-                        <div className="flex items-center">
-                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
-                            <Image src="/smiling-brown-haired-woman.png" alt="Patient" width={24} height={24} />
-                          </div>
-                          <span>Sarah M.</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">In Progress</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+
 
               {/* Quick Links */}
               <Card>
@@ -649,15 +597,7 @@ export default function ProviderDashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Link href="/pose-estimation">
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between text-[#7e58f4] hover:text-[#5a3dc8] bg-purple-50"
-                      >
-                        OpenPose AI Analysis
-                        <Camera className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
+
                     <Link href="/video-library/exercise-demos">
                       <Button variant="outline" className="w-full justify-between text-[#014585] hover:text-[#013a70]">
                         Exercise Library

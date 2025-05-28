@@ -33,14 +33,11 @@ export default function ProviderLoginPage() {
   const { user, login, isLoading: authLoading } = useAuth()
   const router = useRouter()
 
-  // Redirect if already logged in
+  // Check if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      if (user.role === "provider") {
-        router.push("/dashboard/provider")
-      } else if (user.role === "patient") {
-        router.push("/dashboard")
-      }
+      // Don't auto-redirect, let user manually navigate
+      console.log("User logged in:", user)
     }
   }, [user, authLoading, router])
 
@@ -50,19 +47,21 @@ export default function ProviderLoginPage() {
     setIsLoading(true)
 
     try {
-      const success = await login(email, password)
+      const { success, error } = await login(email, password)
 
       if (success) {
-        // Check if the user is a provider
-        if (user?.role === "provider") {
-          router.push("/dashboard/provider")
-        } else if (user?.role === "patient") {
-          setError("This login is for healthcare providers only. Please use the patient login.")
+        // Get the logged in user from localStorage since state might not be updated yet
+        const loggedInUser = JSON.parse(localStorage.getItem("kineticUser") || "{}")
+        
+        if (loggedInUser.role === "provider") {
+          // Show success message but don't auto-redirect
+          setError("")
+          // User can manually navigate using the dashboard button
         } else {
-          setError("Invalid user role. Please contact support.")
+          setError("This login is for healthcare providers only. Please use the patient login.")
         }
       } else {
-        setError("Login failed. Please check your credentials and try again.")
+        setError(error || "Login failed. Please check your credentials and try again.")
       }
     } catch (err) {
       setError("An error occurred. Please try again.")
@@ -84,16 +83,21 @@ export default function ProviderLoginPage() {
     setIsLoading(true)
 
     try {
-      const success = await login(providerEmail, providerPassword)
+      const { success, error } = await login(providerEmail, providerPassword)
 
       if (success) {
-        if (user?.role === "provider") {
-          router.push("/dashboard/provider")
+        // Get the logged in user from localStorage since state might not be updated yet
+        const loggedInUser = JSON.parse(localStorage.getItem("kineticUser") || "{}")
+        
+        if (loggedInUser.role === "provider") {
+          // Show success message but don't auto-redirect
+          setError("")
+          // User can manually navigate using the dashboard button
         } else {
           setError("This login is for healthcare providers only.")
         }
       } else {
-        setError("Login failed. Please check your credentials and try again.")
+        setError(error || "Login failed. Please check your credentials and try again.")
       }
     } catch (err) {
       setError("An error occurred. Please try again.")
@@ -148,7 +152,7 @@ export default function ProviderLoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#00305a] to-[#0066a2] px-4 py-6 sm:p-4">
       <div className="text-center mb-6 sm:mb-8">
         <div className="flex justify-center mb-3 sm:mb-4">
-          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={80} height={80} className="w-16 h-16 sm:w-20 sm:h-20" />
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} className="w-16 h-16 sm:w-20 sm:h-20" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">Kinetic</h1>
         <p className="text-lg sm:text-xl text-white">Provider Portal</p>

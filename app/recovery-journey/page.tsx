@@ -493,7 +493,7 @@ export default function RecoveryJourneyPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Image src="/kinetic logo.png" alt="Kinetic Logo" width={32} height={32} />
+                <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={32} height={32} />
                 <span className="font-bold text-xl">KINETIC</span>
               </div>
               <p className="text-sm text-[#9ca3af] mb-4">

@@ -12,7 +12,7 @@ export function Logo({ className, size = 60, href = "/" }: LogoProps) {
   const logoComponent = (
     <div className={cn("relative", className)} style={{ width: `${size}px`, height: `${size}px` }}>
       <Image
-        src="/kinetic-new-logo.png"
+        src="/kinetic-logo.png"
         alt="Kinetic Logo"
         fill
         style={{
